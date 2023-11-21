@@ -4,13 +4,10 @@ const {DB_URL} = require('../../config')
 
 module.exports = () => {
     try {
-        mongoose.connect(DB_URL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        })
+        mongoose.connect(DB_URL)
         logger.info("DB Connected.")
     } catch(err) {
-        logger.alert('DB failed to connect')
+        logger.error('DB failed to connect')
     }
     
 }

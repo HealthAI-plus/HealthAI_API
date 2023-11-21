@@ -21,3 +21,5 @@ const logger = createLogger({
     transportsObject.console,
   ]
 })
+
+module.exports = logger

@@ -7,6 +7,8 @@
 var app = require('../app');
 var debug = require('debug')('klus-hc:server');
 var http = require('http');
+const logger = require('../logger')
+const connectdb = require('../database/connection')
 
 /**
  * Get port from environment and store in Express.
@@ -85,6 +87,8 @@ function onListening() {
   var addr = server.address();
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
-    : 'port ' + addr.port;
+    : 'port ' + addr.port; 
+  logger.info(`server on ${addr.port}`);
+  connectdb()
   debug('Listening on ' + bind);
 }
