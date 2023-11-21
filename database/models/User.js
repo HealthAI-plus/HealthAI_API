@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
     },
     email_verified: {
         type: Boolean,
-        default: ''
+        default: false
     }
 }, {timestamps: true})
 

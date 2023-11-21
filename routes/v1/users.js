@@ -3,7 +3,7 @@ var router = express.Router();
 
 const logger = require('../../logger')
 const UserModel = require('../../database/models/User')
-const {createJwtToken} = require('../../utils/users')
+const {createJwtToken, generatePasswordHash} = require('../../utils/users')
 const {validateUserCredentials} = require('./middlewares/users')
 const {NODE_ENV} = require('../../config')
 
@@ -49,7 +49,11 @@ router.post('/', async (req, res) => {
       message: "User Registration Successfull."
     })
   } catch (err) {
-    
+    logger.error(err)
+    return res.status(500).json({
+      success: false,
+      message: "User registration failed"
+    })
   }
 })
 
