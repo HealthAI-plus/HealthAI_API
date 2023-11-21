@@ -21,6 +21,6 @@ app.disable("etag");
 app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ limit: "5mb", extended: true }));
 
-app.use('/v1/users/', usersRouterV1);
+app.use('/api/v1/users/', usersRouterV1);
 
 module.exports = app;
