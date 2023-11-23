@@ -4,8 +4,9 @@ const {USER_JWT_SECRET} = require('../../../config')
 const jwt = require('jsonwebtoken')
 
 const {
-    validatePassword
-} = require('../../../utils/users')
+    validatePassword,
+    validateUserJwtToken
+} = require('../../../utils/auth')
 
 async function validateUser(req, res, next) {
     const token = req.signedCookies.token
@@ -15,20 +16,16 @@ async function validateUser(req, res, next) {
             message: 'Unauthorized'
         })
     }
-    jwt.verify(token, USER_JWT_SECRET, (err, info) => {
-        try {
-            if (err) {
-                return res.status(401).json({
-                    success: false,
-                    message: 'Unauthorized'
-                })
-            }
-            req.userId = info.userId
-            next()
-        } catch (err) {
-            logger.error(err)
-        }
-       
+    validateUserJwtToken(token)
+    .then(userId => {
+        req.userId = userId
+        next()
+    })
+    .catch(err => {
+        res.status(401).json({
+            success: false,
+            message: 'Unauthorized'
+        })
     })
 }
 
