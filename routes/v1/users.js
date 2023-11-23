@@ -3,13 +3,10 @@ var router = express.Router();
 
 const logger = require('../../logger')
 const UserModel = require('../../database/models/User')
-const {createJwtToken, generatePasswordHash} = require('../../utils/users')
+const {createJwtToken, generatePasswordHash} = require('../../utils/auth')
 const {validateUserCredentials} = require('./middlewares/users')
 const {NODE_ENV} = require('../../config')
 
-router.get('/', function(req, res, next) {
-  
-});
 
 router.post('/', async (req, res) => {
   const {full_name, email, password} = req.body
@@ -58,7 +55,7 @@ router.post('/', async (req, res) => {
 })
 
 router.post('/login', validateUserCredentials, async (req, res) => {
-  const token = await createJwtToken(req.userId)
+  const token = await createJwtToken(req.userId);
   res.cookie('token', token, {
     signed: true,
     path: '/',
@@ -68,7 +65,8 @@ router.post('/login', validateUserCredentials, async (req, res) => {
   });
   res.status(200).json({
     success: true,
-    message: 'Login Successful'
+    message: 'Login Successful',
+    chatSessionToken: token
   })
 })
 module.exports = router;
