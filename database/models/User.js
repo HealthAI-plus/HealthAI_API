@@ -27,7 +27,8 @@ const userSchema = new mongoose.Schema({
     email_verified: {
         type: Boolean,
         default: false
-    }
+    },
+    threads: [{type: mongoose.Types.ObjectId, ref: 'Thread'}]
 }, {timestamps: true})
 
 
