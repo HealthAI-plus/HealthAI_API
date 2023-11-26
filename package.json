@@ -12,7 +12,7 @@
       "node_modules/",
       "build/"
     ],
-    "delay": "100",
+    "delay": "0",
     "env": {
       "NODE_ENV": "development"
     },
