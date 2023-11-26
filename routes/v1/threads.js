@@ -2,13 +2,14 @@ var express = require('express');
 var router = express.Router();
 const ThreadModel = require('../../database/models/Thread');
 const {validateUser} = require('./middlewares/users')
+const logger = require('../../logger')
 
 router.get('/:thread_id', validateUser, async (req, res) => {
   const {userId} = req
   const {thread_id} = req.params
 
   try {
-    const thread = await ThreadModel.findOne({user: userId, thread: thread_id}).populate('prompts')
+    const thread = await ThreadModel.findOne({user: userId, _id: thread_id}).select(['messages', 'title', 'tags'])
     return res.status(200)
     .json({
       success: true,
@@ -28,6 +29,7 @@ router.get('/:thread_id', validateUser, async (req, res) => {
   }
 })
 
+// Get all threads title
 router.get('/', validateUser, async (req, res) => {
   const {userId} = req
   const {attribute} = req.query
@@ -43,6 +45,7 @@ router.get('/', validateUser, async (req, res) => {
           threads: allThreadTitle
         }
       })
+
     default:
       return res.status(400).json({
         success: false,
@@ -64,9 +67,10 @@ router.post('/', validateUser, async (req, res) => {
       success: true,
       message: 'Thread created successfully',
       data: {
-        thradId: thread.id
+        thread_id: thread.id
       }
     })
+
   } catch (err) {
     logger.error(err);
     res.status(500)
