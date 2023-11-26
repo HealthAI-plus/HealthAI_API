@@ -149,7 +149,8 @@ router.post('/', async (req, res) => {
 
     try {
       const linkSlug = crypto.randomBytes(20).toString('base64');
-      const verificationLink = `${API_DOMAIN_NAME}/verifyemail/${linkSlug}`
+      const encodedSlug =  encodeURIComponent(linkSlug);
+      const verificationLink = `${API_DOMAIN_NAME}/verifyemail/${encodedSlug}`
       const newLink = await GeneratedLinkModel.create({
         slug: linkSlug,
         user: user.id,
@@ -166,7 +167,7 @@ router.post('/', async (req, res) => {
       })
   
     } catch (err) {
-      logger.error('Could not send email verification link.', err)
+      logger.error('Could not send email verification link.', err);
     }
     
   } catch (err) {

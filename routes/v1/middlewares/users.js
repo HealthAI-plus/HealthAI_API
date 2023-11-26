@@ -1,5 +1,5 @@
 const UserModel = require('../../../database/models/User')
-const EmailVerificationLinkModel = require('../../../database/models/GeneratedLink')
+const GeneratedLinkModel = require('../../../database/models/GeneratedLink')
 const logger = require('../../../logger')
 const {CONSTANTS} = require('../../../config')
 const { passwordStrength } = require('check-password-strength')
@@ -115,14 +115,16 @@ async function validateUserCredentials(req, res, next) {
 }
 
 async function verifyEmail(req, res, next) {
-    const {slug} = req.params
+    let {slug} = req.params
+    slug = decodeURIComponent(slug)
 
-    await EmailVerificationLinkModel.findOne({slug}).populate('user')
+    await GeneratedLinkModel.findOne({slug}).populate('user')
     .then(async (doc, err) => {
         if (err) {
             logger.error(err)
             return res.send('Email could not be verified')
         }
+        console.log(err, doc)
         if (doc) {
             await UserModel.findByIdAndUpdate(doc.user.id, {email_verified: true})
             doc.save()
