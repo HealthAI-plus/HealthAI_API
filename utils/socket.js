@@ -2,7 +2,7 @@
 const {Server } = require('socket.io')
 const { CONSTANTS } = require('../config');
 const openai = require('../config/openai');
-const {validateUserJwtToken} = require('./auth')
+const {validateSocketJwtToken} = require('./auth')
 const logger = require('../logger')
 const {S3} = require('../config/aws')
 const ThreadModel = require('../database/models/Thread')
@@ -16,7 +16,8 @@ const chat = io.of('/chat')
 chat.use((socket, next) => {
     try {
         const {chatsessiontoken} = socket.handshake.headers
-        validateUserJwtToken(chatsessiontoken)
+
+        validateSocketJwtToken(chatsessiontoken)
         .then(res => {
             socket.userId = res
             next()
