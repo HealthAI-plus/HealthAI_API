@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon  --trace-warnings ./bin/www"
+    "dev": "nodemon ./bin/www"
   },
   "nodemonConfig": {
     "restartable": "rs",
@@ -19,10 +19,13 @@
     "ext": "js,www"
   },
   "engines": {
-    "node": "18.9.0"
+    "node": "20.9.0"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.456.0",
+    "aws-sdk": "^2.1502.0",
     "bcrypt": "^5.1.1",
+    "check-password-strength": "^2.0.7",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",
@@ -33,7 +36,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.0.1",
     "morgan": "~1.9.1",
+    "multer": "^1.4.5-lts.1",
+    "multer-s3": "^2.0.1",
+    "node-url-shortener": "^2.0.3",
+    "nodemailer": "^6.9.7",
     "openai": "^4.19.0",
+    "socket.io": "^4.7.2",
     "winston": "^3.11.0"
   },
   "devDependencies": {
