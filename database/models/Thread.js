@@ -6,7 +6,6 @@ const threadSchema = new mongoose.Schema({
         lowercase: true,
         default: ''
     },
-    external_ref: String,
     messages: [{
         generated_by: {
             type: String,
@@ -20,8 +19,7 @@ const threadSchema = new mongoose.Schema({
         } ,
     }],
     tags: [String],
-    prompts: [{type: mongoose.Types.ObjectId, ref: 'Prompt'}],
     user: {type: mongoose.Types.ObjectId, ref: 'User', required: true}
 }, {timestamps: true})
 
-module.exports = new mongoose.model('Thread', threadSchema)
+module.exports = mongoose.model('Thread', threadSchema)
