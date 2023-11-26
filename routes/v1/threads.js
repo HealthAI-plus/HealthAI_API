@@ -10,6 +10,13 @@ router.get('/:thread_id', validateUser, async (req, res) => {
 
   try {
     const thread = await ThreadModel.findOne({user: userId, _id: thread_id}).select(['messages', 'title', 'tags'])
+    if (!thread) {
+      return res.status(404)
+      .json({
+        success: false,
+        message: 'Thread could not be found'
+      })
+    }
     return res.status(200)
     .json({
       success: true,
