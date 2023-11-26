@@ -124,7 +124,6 @@ async function verifyEmail(req, res, next) {
             logger.error(err)
             return res.send('Email could not be verified')
         }
-        console.log(err, doc)
         if (doc) {
             await UserModel.findByIdAndUpdate(doc.user.id, {email_verified: true})
             doc.save()
