@@ -25,7 +25,7 @@ app.use(express.urlencoded({ limit: "5mb", extended: true }));
 
 app.use('/api/v1/users/', usersRouterV1);
 app.use('/api/v1/threads/', threadsRouterV1);
-app.use('/emailverify/:slug', verifyEmail)
+app.use('/verifyemail/:slug', verifyEmail)
 
 
 module.exports = app
