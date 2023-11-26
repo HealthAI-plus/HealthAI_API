@@ -1,7 +1,7 @@
 FROM node:20.9.0-alpine3.17
-WORKDIR /usr/klusApi
-COPY package.json .
+WORKDIR /usr/klusapi
+COPY ./package.json .
 RUN npm install
-COPY . .
+COPY ./ .
 EXPOSE 5000
 CMD ["npm", "run", "dev"]
