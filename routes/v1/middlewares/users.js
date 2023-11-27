@@ -65,11 +65,11 @@ async function changePassword(req, res, next) {
       })
     }
 
-    if (new_password.length < 5) {
+    if (new_password.length < 8) {
       return res.status(400)
       .json({
         success: false,
-        message: 'Password should not be less than 5 characters.'
+        message: 'Password should not be less than 8 characters.'
       })
     }
 
