@@ -64,7 +64,10 @@ router.post('/', validateUser,  async (req, res) => {
         return res.status(201)
         .json({
             success: true,
-            message: botMessage
+            message: "Message processed successfuly",
+            data: {
+                bot_message: botMessage
+            }
         })
 
     } catch (err) {
