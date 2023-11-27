@@ -12,7 +12,14 @@ module.exports = {
     SOCKET_JWT_SECRET: process.env.SOCKET_JWT_SECRET,
 
     CONSTANTS: {
-        PROMPT_TYPES: {SPEECH: 'speech', TEXT: 'text'},
+        PROMPT: {
+            TYPES: {SPEECH: 'speech', TEXT: 'text'},
+            MEDIA_TYPES: ['audio', 'image'],
+            MESSAGE: {
+                GENERATED_BY_BOT: 'bot',
+                GENERATED_BY_USER: 'user'
+            }
+        }
         MAX_SOCKET_MEDIA_SIZE: '1e8', // 100MB
         EMAIL_DELIVERY_STATUS: {
             PENDING: 'pending',
