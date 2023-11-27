@@ -8,7 +8,6 @@ const threadSchema = new mongoose.Schema({
     },
     tags: [String],
     messages: [{type: mongoose.Types.ObjectId, ref: 'Message'}],
-    prompts: [{type: mongoose.Types.ObjectId, ref: 'Prompt'}],
     user: {type: mongoose.Types.ObjectId, ref: 'User', required: true}
 }, {timestamps: true})
 

@@ -15,7 +15,6 @@ const messageSchema = new mongoose.Schema({
    },
    content: String,
    thread: {type: mongoose.Types.ObjectId, ref: 'Thread', required: true},
-   prompt: {type: mongoose.Types.ObjectId, ref: 'Prompt', required: true},
    user: {type: mongoose.Types.ObjectId, ref: 'User', required: true}
 }, {timestamps: true, autoIndex: false})
 
