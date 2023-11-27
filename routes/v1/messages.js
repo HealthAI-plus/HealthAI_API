@@ -66,7 +66,15 @@ router.post('/', validateUser,  async (req, res) => {
             success: true,
             message: "Message processed successfuly",
             data: {
-                bot_message: botMessage
+                bot_message: {
+                    type: newBotMessage.type,
+                    generated_by: newBotMessage.generated_by,
+                    content: newBotMessage.content,
+                    thread: newBotMessage.thread,
+                    _id: newBotMessage._id,
+                    createdAt: newBotMessage.createdAt,
+                    updatedAt: newBotMessage.updatedAt
+                }
             }
         })
 
