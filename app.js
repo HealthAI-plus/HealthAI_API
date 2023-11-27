@@ -7,7 +7,8 @@ const app = express()
 const {COOKIE_PARSER_SECRET} = require('./config')
 const usersRouterV1 = require('./routes/v1/users')
 const {verifyEmail} = require('./routes/v1/middlewares/users')
-const threadsRouterV1 = require('./routes/v1/threads')
+const threadsRouterV1 = require('./routes/v1/threads');
+const translationsRouterV1 = require('./routes/v1/translations');
 
 app.use(cors({
     methods: 'GET, POST'
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ limit: "5mb", extended: true }));
 
 app.use('/api/v1/users/', usersRouterV1);
 app.use('/api/v1/threads/', threadsRouterV1);
+app.use('/api/v1/translations/', translationsRouterV1);
 app.use('/verifyemail/:slug', verifyEmail)
 
 
