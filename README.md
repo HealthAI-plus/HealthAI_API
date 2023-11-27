@@ -10,6 +10,9 @@ These variables are required in the `.env` file created above, use any value of 
 * DB_URL
 * NODE_ENV
 * USER_JWT_SECRET
+* AWS_ACCESS_KEY
+* AWS_SECRET_ACCESS_KEY
+* AWS_REGION
 * COOKIE_PARSER_SECRET
 * API_DOMAIN_NAME
 * ORGANISATION_EMAIL_ADDRESS
