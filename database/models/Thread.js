@@ -6,19 +6,9 @@ const threadSchema = new mongoose.Schema({
         lowercase: true,
         default: ''
     },
-    messages: [{
-        generated_by: {
-            type: String,
-            enum: ['user', 'bot'],
-            required: true
-        },
-        content: String,
-        timestamp: {
-            type: Date,
-            default: Date.now()
-        } ,
-    }],
     tags: [String],
+    messages: [{type: mongoose.Types.ObjectId, ref: 'Message'}],
+    prompts: [{type: mongoose.Types.ObjectId, ref: 'Prompt'}],
     user: {type: mongoose.Types.ObjectId, ref: 'User', required: true}
 }, {timestamps: true})
 
