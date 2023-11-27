@@ -57,7 +57,6 @@ router.post('/', validateUser,  async (req, res) => {
             ],
         });
         const botMessage = completion.choices[0].message.content
-        console.log(botMessage)
 
         const newBotMessage = await MessageModel.create({
             type: CONSTANTS.PROMPT.TYPES.TEXT,
