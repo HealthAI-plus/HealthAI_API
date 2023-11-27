@@ -4,7 +4,7 @@ var cookieParser = require('cookie-parser');
 var morganLog = require('morgan');
 const cors = require('cors')
 const app = express()
-const {COOKIE_PARSER_SECRET} = require('./config')
+const {COOKIE_PARSER_SECRET, LOCAL_REACT_DEV_URL, PRODUCTION_REACT_DEV_URL} = require('./config')
 const usersRouterV1 = require('./routes/v1/users')
 const {verifyEmail} = require('./routes/v1/middlewares/users')
 const threadsRouterV1 = require('./routes/v1/threads');
@@ -12,7 +12,12 @@ const messagesRouterV1 = require('./routes/v1/messages');
 const translationsRouterV1 = require('./routes/v1/translations');
 
 app.use(cors({
-    methods: 'GET, POST'
+    methods: 'GET, POST',
+    origin: [
+        LOCAL_REACT_DEV_URL, 
+        PRODUCTION_REACT_DEV_URL
+    ],
+    credentials: true
 }));
   
 app.use(require('helmet')())
