@@ -28,9 +28,9 @@ router.get('/', validateUser, async (req, res) => {
       model: "gpt-3.5-turbo-1106",
       messages: [
         {"role": "system", "content": `
-          Translate prompt to ${response_language}
+          You are a language translator
         `},
-        {"role": "user", "content": user_message}
+        {"role": "user", "content": `translate ${user_message} to ${response_language}`}
       ],
     });
     const botMessage = completion.choices[0].message.content
