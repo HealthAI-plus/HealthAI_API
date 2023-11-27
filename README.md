@@ -12,7 +12,6 @@ These variables are required in the `.env` file created above, use any value of 
 * USER_JWT_SECRET
 * COOKIE_PARSER_SECRET
 * API_DOMAIN_NAME
-* AWS_ACCESS_KEY
 * ORGANISATION_EMAIL_ADDRESS
 * ORGANISATION_EMAIL_PASSWORD
 * ORGANISATION_MAIL_HOST
