@@ -29,7 +29,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    threads: [{type: mongoose.Types.ObjectId, ref: 'Thread'}]
+    threads: [{type: mongoose.Types.ObjectId, ref: 'Thread'}],
+    messages: [{type: mongoose.Types.ObjectId, ref: 'Message'}],
+    prompts: [{type: mongoose.Types.ObjectId, ref: 'Prompt'}]
 }, {timestamps: true})
 
 
