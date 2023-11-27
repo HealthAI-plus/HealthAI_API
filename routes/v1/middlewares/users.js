@@ -11,13 +11,15 @@ const {
 } = require('../../../utils/auth')
 
 async function validateUser(req, res, next) {
-    const token = req.signedCookies.token
-    if (!token) {
-        return res.status(401).json({
+    const authHeader = req.headers['authorization'];
+
+    if (!authHeader) {
+         return res.status(401).json({
             success: false,
             message: 'Unauthorized'
         })
     }
+    const token = authHeader.split(' ')[1];
     validateUserJwtToken(token)
     .then(userId => {
         req.userId = userId

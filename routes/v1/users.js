@@ -181,6 +181,7 @@ router.post('/', async (req, res) => {
 
 router.post('/login', validateUserCredentials, async (req, res) => {
   const token = await createJwtToken(req.userId);
+  res.set('Authorization', `Bearer ${token}`);
   res.cookie('token', token, {
     signed: true,
     path: '/',
@@ -190,7 +191,10 @@ router.post('/login', validateUserCredentials, async (req, res) => {
   });
   res.status(200).json({
     success: true,
-    message: 'Login Successful'
+    message: 'Login Successful',
+    data: {
+      token
+    }
   })
 })
 module.exports = router;
