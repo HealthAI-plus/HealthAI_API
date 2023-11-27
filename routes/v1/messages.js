@@ -11,7 +11,7 @@ const PromptModel = require('../../database/models/Prompt');
 router.post('/', validateUser,  async (req, res) => {
     const {user_message, thread_id, response_language, message_language} = req.body
 
-    if (!thread_id) {
+    if (!thread_id || !await ThreadModel.findById(thread_id)) {
         return res.status(400)
         .json({
             success: false,
@@ -23,11 +23,15 @@ router.post('/', validateUser,  async (req, res) => {
 
     try {
         const allThreadMessages = await MessageModel.find({thread: thread_id}).select(['generated_by', 'content'])
-        let newPrompt = await PromptModel.create({
+
+        const newPrompt = await PromptModel.create({
             thread: thread_id,
             user: user_id
         })
-        let newUserMessage = await MessageModel.create({
+        await ThreadModel.findByIdAndUpdate(thread_id, {
+            $push: {prompts: newPrompt.id}
+        })
+        const newUserMessage = await MessageModel.create({
             type: CONSTANTS.PROMPT.TYPES.TEXT,
             generated_by: CONSTANTS.PROMPT.MESSAGE.GENERATED_BY_USER,
             content: user_message,
