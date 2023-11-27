@@ -4,7 +4,7 @@ var router = express.Router();
 const logger = require('../../logger')
 const UserModel = require('../../database/models/User')
 const GeneratedLinkModel = require('../../database/models/GeneratedLink')
-const {createJwtToken, generatePasswordHash, createChatSessionToken} = require('../../utils/auth')
+const {createJwtToken, generatePasswordHash} = require('../../utils/auth')
 const {sendVerificationEmail, sendPasswordResetLink} = require('../../utils/sendEmail')
 const {validateUserCredentials, changePassword} = require('./middlewares/users')
 const {NODE_ENV, CONSTANTS, API_DOMAIN_NAME} = require('../../config')
@@ -181,7 +181,6 @@ router.post('/', async (req, res) => {
 
 router.post('/login', validateUserCredentials, async (req, res) => {
   const token = await createJwtToken(req.userId);
-  const chatSessionToken = await createChatSessionToken(req.userId)
   res.cookie('token', token, {
     signed: true,
     path: '/',
@@ -191,8 +190,7 @@ router.post('/login', validateUserCredentials, async (req, res) => {
   });
   res.status(200).json({
     success: true,
-    message: 'Login Successful',
-    chatSessionToken
+    message: 'Login Successful'
   })
 })
 module.exports = router;

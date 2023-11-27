@@ -9,7 +9,6 @@ module.exports = {
     NODE_ENV: process.env.NODE_ENV,
     COOKIE_PARSER_SECRET: process.env.COOKIE_PARSER_SECRET,
     API_DOMAIN_NAME: process.env.API_DOMAIN_NAME,
-    SOCKET_JWT_SECRET: process.env.SOCKET_JWT_SECRET,
 
     CONSTANTS: {
         PROMPT: {
@@ -19,7 +18,7 @@ module.exports = {
                 GENERATED_BY_BOT: 'bot',
                 GENERATED_BY_USER: 'user'
             }
-        }
+        },
         MAX_SOCKET_MEDIA_SIZE: '1e8', // 100MB
         EMAIL_DELIVERY_STATUS: {
             PENDING: 'pending',
