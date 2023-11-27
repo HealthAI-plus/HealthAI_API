@@ -9,6 +9,9 @@ module.exports = {
     NODE_ENV: process.env.NODE_ENV,
     COOKIE_PARSER_SECRET: process.env.COOKIE_PARSER_SECRET,
     API_DOMAIN_NAME: process.env.API_DOMAIN_NAME,
+    
+    LOCAL_REACT_DEV_URL: process.env.LOCAL_REACT_DEV_URL, 
+    PRODUCTION_REACT_DEV_URL: process.env.PRODUCTION_REACT_DEV_URL,
 
     CONSTANTS: {
         PROMPT: {
