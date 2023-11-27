@@ -8,7 +8,7 @@ const ThreadModel = require('../../database/models/Thread');
 const MessageModel = require('../../database/models/Message');
 
 router.post('/', validateUser,  async (req, res) => {
-    const {user_message, thread_id, response_language, message_language} = req.body
+    const {user_message, thread_id, response_language, request_language} = req.body
 
     if (!thread_id || !await ThreadModel.findById(thread_id)) {
         return res.status(400)
