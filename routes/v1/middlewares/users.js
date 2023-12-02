@@ -1,5 +1,6 @@
 const UserModel = require('../../../database/models/User')
 const GeneratedLinkModel = require('../../../database/models/GeneratedLink')
+const MessageModel = require('../../../database/models/Message')
 const logger = require('../../../logger')
 const {CONSTANTS} = require('../../../config')
 const { passwordStrength } = require('check-password-strength')
@@ -31,6 +32,49 @@ async function validateUser(req, res, next) {
             message: 'Unauthorized'
         })
     })
+}
+
+async function decodeSharableThreadLink(req, res, next) {
+    let {slug} = req.params
+    slug = decodeURIComponent(slug)
+
+    try {
+        const findLink = await GeneratedLinkModel.findOne({slug}).populate({
+            path: 'metadata',
+            populate: {
+                path: 'thread_snapshot',
+                populate: {
+                    path: 'thread_messages',
+                    model: 'Message'
+                }
+            }
+        })
+        if (!findLink) {
+            return res.status(400)
+            .json({
+                success: false,
+                message: 'Invalid link'
+            })
+        }
+
+        return res.status(200)
+        .json({
+            success: true,
+            message: 'Thread messages found.',
+            data: {
+                thread: findLink.metadata.thread_snapshot
+            }
+        })
+
+    } catch (err) {
+        logger.error(err)
+        return res.status(500)
+        .json({
+            success: false,
+            message: 'Could not validate link'
+        })   
+    }
+
 }
 
 async function changePassword(req, res, next) {
@@ -140,5 +184,6 @@ module.exports = {
     validateUser,
     changePassword,
     verifyEmail,
+    decodeSharableThreadLink,
     validateUserCredentials
 }
