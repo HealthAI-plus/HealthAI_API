@@ -66,10 +66,18 @@ router.post('/forgot_password', async (req, res) => {
 
       sendPasswordResetLink(email, passwordResetLink)
       .then(async res => {
-        await GeneratedLinkModel.findByIdAndUpdate(newLink.id, {delivery_status: CONSTANTS.EMAIL_DELIVERY_STATUS.DELIVERED})
+        await GeneratedLinkModel.findByIdAndUpdate(newLink.id, {
+          metadata: {
+            email_delivery_status: CONSTANTS.EMAIL_DELIVERY_STATUS.DELIVERED
+          }
+        })
       })
       .catch(async err => {
-        await GeneratedLinkModel.findByIdAndUpdate(newLink.id, {delivery_status: CONSTANTS.EMAIL_DELIVERY_STATUS.FAILED})
+        await GeneratedLinkModel.findByIdAndUpdate(newLink.id, {
+          metadata: {
+            email_delivery_status: CONSTANTS.EMAIL_DELIVERY_STATUS.FAILED
+          }
+        })
       })
 
     }
