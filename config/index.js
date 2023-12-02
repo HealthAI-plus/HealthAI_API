@@ -12,6 +12,11 @@ module.exports = {
     
     LOCAL_REACT_DEV_URL: process.env.LOCAL_REACT_DEV_URL, 
     PRODUCTION_REACT_DEV_URL: process.env.PRODUCTION_REACT_DEV_URL,
+    PAYSTACK_KEY: process.env.PAYSTACK_KEY_LIVE,
+    PAYSTACK_MONTHLY_PLAN_CODE: process.env.PAYSTACK_MONTHLY_PLAN_CODE,
+    PAYSTACK_YEARLY_PLAN_CODE: process.env.PAYSTACK_YEARLY_PLAN_CODE,
+    STRIPE_KEY: process.env.STRIPE_KEY,
+    STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
 
     CONSTANTS: {
         PROMPT: {
@@ -30,8 +35,44 @@ module.exports = {
         },
         GENERATED_LINK_REASON: {
             FORGOT_PASSWORD: 'forgot_password',
-            EMAIL_VERIFICATION: 'email_verification'
-        }
+            EMAIL_VERIFICATION: 'email_verification',
+            SHARE_THREAD: 'share_thread'
+        },
+        SUBSCRIPTIONS: {
+            PREMIUM: {
+                BILLING_CYCLE: {
+                    MONTHLY: {
+                        PRICE: 750
+                    },
+                    YEARLY: {
+                        PRICE: 5000
+                    }
+                },
+                FEATURES: [
+                    {
+                        name: 'Text-to-Voice',
+                        description: 'Convert written text into high-quality synthesized speech',
+                    },
+                    {
+                        name: 'Voice-to-Text',
+                        description: 'Transcribe spoken words or audio content into written text',
+                    },
+                    {
+                        name: 'Voice-to-Voice',
+                        description: 'Translate and convert spoken words from one language to another'
+                    }
+                    
+                ],
+            },
+            FREEMIUM: {
+                FEATURES: [
+                    {
+                        name: 'Text-to-Text',
+                        description: 'Get response to written text in text form.'
+                    }
+                ]
+            }
+        }, 
     },
 
     AWS_ACCESS_KEY: process.env.AWS_ACCESS_KEY,
