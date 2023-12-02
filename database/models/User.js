@@ -34,5 +34,11 @@ const userSchema = new mongoose.Schema({
     prompts: [{type: mongoose.Types.ObjectId, ref: 'Prompt'}]
 }, {timestamps: true})
 
+if (!userSchema.options.toObject) userSchema.options.toObject = {};
+userSchema.options.toObject.transform = function(doc, ret, options) {
+    delete doc.password
+    return ret
+}
+
 
 module.exports = mongoose.model('User', userSchema)
