@@ -34,9 +34,9 @@ module.exports = {
             FAILED: 'failed'
         },
         GENERATED_LINK_REASON: {
-            FORGOT_PASSWORD: 'forgot_password',
-            EMAIL_VERIFICATION: 'email_verification',
-            SHARE_THREAD: 'share_thread'
+            FORGOT_PASSWORD: 'forgot-password',
+            EMAIL_VERIFICATION: 'email-verification',
+            SHARE_THREAD: 'share-thread'
         },
         SUBSCRIPTIONS: {
             PREMIUM: {
