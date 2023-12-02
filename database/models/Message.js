@@ -16,6 +16,14 @@ const messageSchema = new mongoose.Schema({
    content: String,
    thread: {type: mongoose.Types.ObjectId, ref: 'Thread', required: true},
    user: {type: mongoose.Types.ObjectId, ref: 'User', required: true}
-}, {timestamps: true, autoIndex: false})
+}, {timestamps: true, autoIndex: false});
+
+if (!messageSchema.options.toObject) messageSchema.options.toObject = {};
+messageSchema.options.toObject.transform = function(doc, ret) {
+   delete doc.thread;
+   delete doc.user;
+
+   return ret;
+}
 
 module.exports = mongoose.model('Message', messageSchema)
