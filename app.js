@@ -17,7 +17,7 @@ const {rateLimit} = require('express-rate-limit')
 app.use(cors({
     methods: 'GET, POST, DELETE',
     origin: [
-        'https://health-ai-alpha.vercel.app',
+        'https://healthbotai.netlify.app/',
         'http://localhost:5173'
     ],
     credentials: true
