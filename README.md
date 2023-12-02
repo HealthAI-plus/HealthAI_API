@@ -1,6 +1,6 @@
 ## Getting started
 ### Installation
-* Run `git clone https://github.com/Stutern-HealthAI/Backend` to download the repo. <br />
+* Run `https://github.com/jahdevelops/klus-hc` to download the repo. <br />
 * Run `npm install` to install the required npm packages.
 
 ### Populating `.env` file
