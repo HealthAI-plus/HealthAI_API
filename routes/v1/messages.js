@@ -7,6 +7,28 @@ const {CONSTANTS} = require('../../config');
 const ThreadModel = require('../../database/models/Thread');
 const MessageModel = require('../../database/models/Message');
 
+router.delete('/:message_id/delete', validateUser,  async (req, res) => {
+  const {userId} = req
+  const {message_id} = req.params
+
+  try {
+    await MessageModel.findByIdAndDelete(message_id);
+    return res.status(204)
+    .json({
+      success: true,
+      message: 'Message deleted.'
+    })
+  } catch (err) {
+    logger.error('Error while trying to delete message', err)
+    return res.status(500)
+    .json({
+      success: false,
+      message: 'Could not delete thread'
+    })
+  }
+
+})
+
 router.post('/', validateUser,  async (req, res) => {
     const {user_message, thread_id, response_language, request_language} = req.body
 
