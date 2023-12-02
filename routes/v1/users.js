@@ -3,11 +3,12 @@ var router = express.Router();
 
 const logger = require('../../logger')
 const UserModel = require('../../database/models/User')
+const SubscriptionModel = require('../../database/models/Subscription')
 const GeneratedLinkModel = require('../../database/models/GeneratedLink')
 const {createJwtToken, generatePasswordHash} = require('../../utils/auth')
 const {sendVerificationEmail, sendPasswordResetLink} = require('../../utils/sendEmail')
 const {validateUserCredentials, changePassword} = require('./middlewares/users')
-const {NODE_ENV, CONSTANTS, API_DOMAIN_NAME} = require('../../config')
+const {NODE_ENV, CONSTANTS, API_DOMAIN_NAME, STRIPE_PUBLISHABLE_KEY} = require('../../config')
 const crypto = require('crypto');
 const {validateUser} = require('./middlewares/users')
 
@@ -144,7 +145,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "User Registration Successfull. Kindly check your email for an email verification link."
+      message: "User Registration Successfull. Kindly check your email for a email verification link."
     })
 
     try {
@@ -158,13 +159,6 @@ router.post('/', async (req, res) => {
       })
 
       sendVerificationEmail(email, verificationLink)
-      .then(async res => {
-        await GeneratedLinkModel.findByIdAndUpdate(newLink.id, {delivery_status: CONSTANTS.EMAIL_DELIVERY_STATUS.DELIVERED})
-      })
-      .catch(async err => {
-        logger.error(err)
-        await GeneratedLinkModel.findByIdAndUpdate(newLink.id, {delivery_status: CONSTANTS.EMAIL_DELIVERY_STATUS.FAILED})
-      })
   
     } catch (err) {
       logger.error('Could not send email verification link.', err);
