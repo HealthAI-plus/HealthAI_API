@@ -6,7 +6,11 @@ const generatedLinkSchema = new mongoose.Schema({
 
     reason: {
         type: String,
-        enum: [CONSTANTS.GENERATED_LINK_REASON.EMAIL_VERIFICATION, CONSTANTS.GENERATED_LINK_REASON.FORGOT_PASSWORD],
+        enum: [
+            'email-verification',
+            'forgot-password',
+            'share-thread'
+        ],
         required: true
     },
 
@@ -15,12 +19,9 @@ const generatedLinkSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
-    
-    delivery_status: {
-        type: String,
-        enum: [CONSTANTS.EMAIL_DELIVERY_STATUS.DELIVERED, CONSTANTS.EMAIL_DELIVERY_STATUS.PENDING, CONSTANTS.EMAIL_DELIVERY_STATUS.FAILED ],
-        default: CONSTANTS.EMAIL_DELIVERY_STATUS.PENDING
-    }
+
+    metadata: Object
+
 }, {timestamps: true})
 
 module.exports = mongoose.model('GeneratedLink', generatedLinkSchema)
