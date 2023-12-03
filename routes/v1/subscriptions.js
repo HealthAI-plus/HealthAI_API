@@ -77,7 +77,7 @@ router.post('', validateUser, async (req, res) => {
     });
 
     await SubscriptionModel.create({
-      plan_name: 'premium',
+      plan_name: planDetails.data.name,
       billing_cycle,
       price: planDetails.data.amount,
       plan_description: planDetails.data.description,
