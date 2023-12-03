@@ -22,7 +22,7 @@ router.post('', validateUser, async (req, res) => {
 
   const {billing_cycle} = req.body
 
-  if (['monthy', 'yearly'].findIndex(billing_cycle) === -1) {
+  if (['monthly', 'yearly'].findIndex(i => i === billing_cycle) === -1) {
     return res.status(400).json({
       success: false,
       message: 'Invalid billing cycle passed.'
