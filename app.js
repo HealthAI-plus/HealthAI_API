@@ -12,14 +12,12 @@ const messagesRouterV1 = require('./routes/v1/messages');
 const translationsRouterV1 = require('./routes/v1/translations');
 const cardsRouterV1 = require('./routes/v1/cards');
 const subscriptionsRouterV1 = require('./routes/v1/subscriptions');
-const {rateLimit} = require('express-rate-limit')
-
+const {rateLimit} = require('express-rate-limit');
+const CLIENT_ORIGINS = process.env.CLIENT_ORIGINS.split(' ')
+console.log(CLIENT_ORIGINS)
 app.use(cors({
     methods: 'GET, POST, DELETE',
-    origin: [
-        'https://healthbotai.netlify.app/',
-        'http://localhost:5173'
-    ],
+    origin: CLIENT_ORIGINS,
     credentials: true
 }));
 const rateLimiter = rateLimit({
