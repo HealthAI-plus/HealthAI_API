@@ -3,7 +3,7 @@ var router = express.Router();
 const {validateUser} = require('./middlewares/users')
 const {
   PAYSTACK_MONTHLY_PLAN_CODE, 
-  PAYSTACK_YEARLY_PLAN_CODE, 
+  PAYSTACK_ANNUALLY_PLAN_CODE, 
   PAYSTACK_KEY,
   CONSTANTS
 } = require('../../config');
@@ -12,90 +12,154 @@ const logger = require('../../logger');
 
 const UserModel = require('../../database/models/User');
 const SubscriptionModel = require('../../database/models/Subscription');
+const PaystackTransactionModel = require('../../database/models/PaystackTransaction');
 
-const PaystackNode = require('paystack-node');
+const paystack = require('paystack')(PAYSTACK_KEY);
+const {v4: uuid} = require('uuid')
 
-const paystack = new PaystackNode(PAYSTACK_KEY)
-const PaystackCustomerModel = require('../../database/models/PaystackCustomer');
 
-router.post('', validateUser, async (req, res) => {
+router.post('/verify_transaction', validateUser, async (req, res) => {
+  const {transaction_reference, plan_code } = req.body
+  const {userId} = req
+  let verifyTransaction
 
-  const {billing_cycle} = req.body
+  try {
+    verifyTransaction = await paystack.transaction.verify(transaction_reference);
 
-  if (['monthly', 'yearly'].findIndex(i => i === billing_cycle) === -1) {
-    return res.status(400).json({
+    if (!verifyTransaction.status) {
+      return res.status(400)
+      .json({
+        status: false,
+        message: 'Invalid transaction reference passed'
+      })
+    }
+
+  } catch (err) {
+    logger.error('Could not verify transaction', err)
+    return res.status(500)
+    .json({
       success: false,
-      message: 'Invalid billing cycle passed.'
+      message: 'Could not verify transaction'
     })
   }
 
   try {
-    const user = await UserModel.findById(req.userId).select(['email', 'full_name']);
+    const planDetails = await paystack.plan.get(plan_code);
 
-    let paystack_customer = await PaystackCustomerModel.findOne({user: req.userId});
+    if (!planDetails.status) {
+       return res.status(400)
+      .json({
+        success: false,
+        message: 'Invalid plan ID passed'
+      })
+    }
 
-    try {
-      const planDetails = billing_cycle === 'monthy' ? 
-        await paystack.getPlan(PAYSTACK_MONTHLY_PLAN_CODE) 
-        : await paystack.getPlan(PAYSTACK_YEARLY_PLAN_CODE);
-    } catch (err) {
-      throw new Error(`Could not fetch ${billing_cycle} plan details`, err)
+    if (verifyTransaction.data.status === 'success') {
+      let next30Days = new Date().setDate(new Date().getDate() + 31);
+      let nextAnnualDate = new Date().setDate(new Date().getDate() + 366);
+
+      await SubscriptionModel.create({
+        plan_name: planDetails.data.name,
+        billing_cycle: planDetails.data.interval,
+        price: planDetails.data.amount,
+        plan_description: planDetails.data.description,
+        status: 'active',
+        auto_renew: true,
+        features: CONSTANTS.SUBSCRIPTIONS.PREMIUM.FEATURES,
+        transaction_reference,
+        user: userId,
+        start_date: verifyTransaction.data.paid_at,
+        end_date: planDetails.data.interval === 'monthly' ? new Date(next30Days) : new Date(nextAnnualDate)
+      });
+    };
+
+    await PaystackTransactionModel.findOneAndUpdate(
+      {
+        reference: transaction_reference,
+      }, 
+      {
+        status: verifyTransaction.data.status
+      }
+    );
+
+    switch (verifyTransaction.data.status) {
+      case 'success':
+        return res.status(201)
+        .json({
+          success: true,
+          message: 'Subscription created successfuly'
+        });
+
+      default:
+        return res.status(202)
+        .json({
+          success: false,
+          message: 'Transaction is not yet complete'
+        });
     }
 
       
-    if (!paystack_customer) {
 
-      try {
-        const new_paystack_customer = await paystack.createCustomer({
-          email: user.email,
-          first_name: user.full_name.split(' ')[0],
-          last_name: user.full_name.split(' ')[1]
-        });
+  } catch (err) {
+    logger.alert('Could not create a subscription for user', err)
+    return res.status(500)
+    .json({
+      success: false,
+      message: 'Could not create a subscription'
+    })
+  }
 
-        paystack_customer = await PaystackCustomerModel.create({
-          user: userId,
-          customer_code: new_paystack_customer.customer_code,
-        })
-      } catch(err) {
-        throw new Error('Could not create a new customer:', err);
-      }
-        
+})
+
+router.post('/transaction', validateUser, async (req, res) => {
+  const {billing_cycle} = req.body
+  const {userId} = req
+  const user = await UserModel.findById(userId).select(['email', 'full_name']);
+
+  if (['monthly', 'annually'].findIndex(i => i === billing_cycle) === -1) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid billing cycle passed.'
+    })
+  };
+
+  try {
+    if (billing_cycle === 'monthly') {
+      planDetails = await paystack.plan.get(PAYSTACK_MONTHLY_PLAN_CODE) 
+    } else {
+      planDetails = await paystack.plan.get(PAYSTACK_ANNUALLY_PLAN_CODE)
     }
 
-    const paystack_transaction = await paystack.initializeTransaction({
-      email: user.email,
-      plan: PAYSTACK_MONTHLY_PLAN_CODE
-    });
+    let newPaystackTransaction = await PaystackTransactionModel.create({
+      reference: uuid(),
+      status: 'pending',
+      user: userId
+    })
 
     res.status(201)
     .json({
       success: true,
-      message: 'Checkout link generated successfuly',
+      message: 'Transaction created successfuly',
       data: {
-        checkout_link: paystack_transaction.authorization_url
-      } 
-    });
-
-    await SubscriptionModel.create({
-      plan_name: planDetails.data.name,
-      billing_cycle,
-      price: planDetails.data.amount,
-      plan_description: planDetails.data.description,
-      status: 'pending',
-      auto_renew: true,
-      features: CONSTANTS.SUBSCRIPTIONS.PREMIUM.FEATURES,
-      user: req.userId,
+        plan_code: planDetails.data.plan_code,
+        plan_name: planDetails.data.name,
+        plan_interval: planDetails.data.interval,
+        transaction_reference: newPaystackTransaction.reference,
+        email: user.email,
+        first_name: user.full_name.split(' ')[0],
+        last_name: user.full_name.split(' ')[1]
+      }
     })
 
   } catch (err) {
-    logger.error(err);
+    logger.error(`Could not create transaction`, err);
     res.status(500)
     .json({
-      success: false,
-      message: 'Could not intialize a subscription.'
+      status: false,
+      message: `Could not fetch plan`
     })
   }
- 
+
 })
 
 router.get(':subscription_id', validateUser, async (req, res) => {
