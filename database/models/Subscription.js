@@ -10,18 +10,28 @@ const subscriptionSchema = new mongoose.Schema({
    plan_description: String,
    billing_cycle: {
       type: String,
-      enum: ['yearly', 'monthly'],
-      default: 'yearly'
+      enum: ['annually', 'monthly'],
+      default: 'annually',
+      required: true
    },
    features: [{name: String, description: String}],
-   price: String,
+   price: {
+      type: Number,
+      required: true
+   },
    start_date: Date,
    end_date: Date,
    auto_renew: Boolean,
    status: {
       type: String,
       enum: ['active', 'cancelled', 'expired', 'pending'],
-      default: 'pending'
+      default: 'pending',
+      required: true
+   },
+   transaction_reference: {
+      type: mongoose.Types.ObjectId, 
+      ref: 'PaystackTransaction', 
+      required: true
    },
    user: {
       type: mongoose.Types.ObjectId, 
