@@ -122,7 +122,7 @@ async function sendPasswordResetLink(email, passwordResetLink) {
                 <h2>Reset your password</h2>
                 <p id="p1"> A request was sent for a password reset link </p>
                 <p>Reset your password by clicking button below.</p>
-                <a id="a1" href="${passwordResetLink}"> Verify </a> 
+                <a id="a1" href="${passwordResetLink}"> Reset </a> 
             
                 <p>Or Copy and paste the url in your browser</p>
                 <a href="" style="width: 80%;">${passwordResetLink}</a>
