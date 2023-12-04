@@ -14,7 +14,7 @@ module.exports = {
     PRODUCTION_REACT_DEV_URL: process.env.PRODUCTION_REACT_DEV_URL,
     PAYSTACK_KEY: process.env.PAYSTACK_KEY_LIVE,
     PAYSTACK_MONTHLY_PLAN_CODE: process.env.PAYSTACK_MONTHLY_PLAN_CODE,
-    PAYSTACK_YEARLY_PLAN_CODE: process.env.PAYSTACK_YEARLY_PLAN_CODE,
+    PAYSTACK_ANNUALLY_PLAN_CODE: process.env.PAYSTACK_ANNUALLY_PLAN_CODE,
     STRIPE_KEY: process.env.STRIPE_KEY,
     STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY,
 
@@ -40,14 +40,6 @@ module.exports = {
         },
         SUBSCRIPTIONS: {
             PREMIUM: {
-                BILLING_CYCLE: {
-                    MONTHLY: {
-                        PRICE: 750
-                    },
-                    YEARLY: {
-                        PRICE: 5000
-                    }
-                },
                 FEATURES: [
                     {
                         name: 'Text-to-Voice',

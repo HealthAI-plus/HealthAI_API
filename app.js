@@ -13,8 +13,8 @@ const translationsRouterV1 = require('./routes/v1/translations');
 const cardsRouterV1 = require('./routes/v1/cards');
 const subscriptionsRouterV1 = require('./routes/v1/subscriptions');
 const {rateLimit} = require('express-rate-limit');
-const CLIENT_ORIGINS = process.env.CLIENT_ORIGINS.split(' ')
-console.log(CLIENT_ORIGINS)
+const CLIENT_ORIGINS = process.env.CLIENT_ORIGINS.split(', ')
+
 app.use(cors({
     methods: 'GET, POST, DELETE',
     origin: CLIENT_ORIGINS,
@@ -48,10 +48,6 @@ app.use('/api/v1/messages/', messagesRouterV1);
 app.use('/api/v1/translations/', translationsRouterV1);
 app.use('/api/v1/cards/', cardsRouterV1);
 app.use('/api/v1/subscriptions/', subscriptionsRouterV1);
-
-app.get('/cardsetup', (req, res) => {
-    res.render('stripeElement')
-})
 
 app.use('/verifyemail/:slug', verifyEmail);
 
