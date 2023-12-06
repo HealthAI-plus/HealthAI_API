@@ -26,5 +26,5 @@ services:
       - klusdb
     restart: always
     volumes:
-      - ./:/usr/appvol
+      - ./:/usr/klusapi
     
