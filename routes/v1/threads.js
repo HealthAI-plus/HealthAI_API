@@ -113,7 +113,7 @@ router.get('/:thread_id', validateUser, async (req, res) => {
   const {thread_id} = req.params
 
   try {
-    const thread = await ThreadModel.findOne({user: userId, _id: thread_id}).select(['messages', 'title', 'tags']).populate('messages')
+    const thread = await ThreadModel.findOne({user: userId, _id: thread_id}).select(['messages', 'title', 'tags', 'createdAt']).populate('messages')
     if (!thread) {
       return res.status(404)
       .json({
@@ -143,25 +143,30 @@ router.get('/:thread_id', validateUser, async (req, res) => {
 // Get all threads title
 router.get('/', validateUser, async (req, res) => {
   const {userId} = req
-  const {attribute} = req.query
+  const {attribute, page_size, current_page} = req.query
 
-  switch (attribute) {
-    case 'title':
-      const allThreadTitle = await ThreadModel.find({user: userId}).select(['title', 'id']);
+  if (!attribute || !page_size || !current_page) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid request query parameters.'
+    })
+  }
 
-      return res.status(200).json({
-        success: true,
-        message: 'Threads found.',
-        data: {
-          threads: allThreadTitle
-        }
-      })
+  try {
+    const allThreadTitle = await ThreadModel.find({user: userId}).select(['title', 'id', 'createdAt']).skip((current_page - 1) * page_size).limit(page_size);
 
-    default:
-      return res.status(400).json({
-        success: false,
-        message: 'No thread attribute in request url'
-      })
+    return res.status(200).json({
+      success: true,
+      message: 'Threads found.',
+      data: {
+        threads: allThreadTitle
+      }
+    })
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: 'Could not fetch threads'
+    })
   }
 
 })
