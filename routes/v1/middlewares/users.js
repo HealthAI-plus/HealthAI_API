@@ -162,9 +162,9 @@ async function validateUserCredentials(req, res, next) {
 
 async function verifyEmail(req, res, next) {
     let {slug} = req.params
-    slug = decodeURIComponent(slug)
+    const decodedSlug = decodeURIComponent(slug);
 
-    await GeneratedLinkModel.findOne({slug}).populate('user')
+    await GeneratedLinkModel.findOne({slug: decodedSlug}).populate('user')
     .then(async (doc, err) => {
         if (err) {
             logger.error(err)

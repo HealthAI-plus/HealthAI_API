@@ -54,7 +54,8 @@ router.post('/forgot_password', async (req, res) => {
     const user = await UserModel.findOne({email})
     if (user) {
       const linkSlug = crypto.randomBytes(20).toString('base64');
-      const passwordResetLink = `${API_DOMAIN_NAME}/reset_password/${linkSlug}`
+      const encodedSlug =  encodeURIComponent(linkSlug);
+      const passwordResetLink = `${API_DOMAIN_NAME}/reset_password/${encodedSlug}`;
 
       const newLink = await GeneratedLinkModel.create({
         slug: linkSlug,
@@ -98,10 +99,11 @@ router.post('/forgot_password', async (req, res) => {
 
 router.post('/reset_password/:slug', async (req, res, next) => {
   const {slug} = req.params
+  const decodedSlug = decodeURIComponent(slug)
 
   try {
     const findSlug = await GeneratedLinkModel.findOne({
-      slug
+      slug: decodedSlug
     })
 
     if (!findSlug) {
@@ -160,7 +162,7 @@ router.post('/change_password', validateUser, async (req, res, next) => {
     };
     req.existingHashedPassword = findUser.password
     next();
-    
+
   } catch (err) {
     logger.error('Password validation error', err)
     return res.status(500)
