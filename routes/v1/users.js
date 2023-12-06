@@ -142,7 +142,7 @@ router.post('/reset_password/:slug', async (req, res, next) => {
 );
 
 
-router.post('/change_password', validateUser, async (req, next) => {
+router.post('/change_password', validateUser, async (req, res, next) => {
   const {current_password} = req.body
 
   const {userId} = req
@@ -160,8 +160,14 @@ router.post('/change_password', validateUser, async (req, next) => {
     };
     req.existingHashedPassword = findUser.password
     next();
+    
   } catch (err) {
-
+    logger.error('Password validation error', err)
+    return res.status(500)
+    .json({
+      success: false,
+      message: 'Password change was not Successfull'
+    })
   }
 }, 
   validatePasswordStrength, 
