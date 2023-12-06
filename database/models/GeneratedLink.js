@@ -8,7 +8,7 @@ const generatedLinkSchema = new mongoose.Schema({
         type: String,
         enum: [
             'email-verification',
-            'forgot-password',
+            'reset-password',
             'share-thread'
         ],
         required: true

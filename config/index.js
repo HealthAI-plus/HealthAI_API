@@ -34,7 +34,7 @@ module.exports = {
             FAILED: 'failed'
         },
         GENERATED_LINK_REASON: {
-            FORGOT_PASSWORD: 'forgot-password',
+            RESET_PASSWORD: 'reset-password',
             EMAIL_VERIFICATION: 'email-verification',
             SHARE_THREAD: 'share-thread'
         },

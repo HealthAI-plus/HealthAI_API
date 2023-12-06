@@ -50,6 +50,7 @@ app.use('/api/v1/cards/', cardsRouterV1);
 app.use('/api/v1/subscriptions/', subscriptionsRouterV1);
 
 app.use('/verifyemail/:slug', verifyEmail);
+app.use('/reset_password/', (req, res) => res.redirect('/api/v1/users/reset_password/'));
 
 app.get('/invite/:slug', (req, res, next) => {
     switch (req.query.ty) {

@@ -77,24 +77,13 @@ async function decodeSharableThreadLink(req, res, next) {
 
 }
 
-async function changePassword(req, res, next) {
-  const {new_password, current_password, confirm_password} = req.body
 
-  const {userId} = req
+async function validatePasswordStrength(req, res, next) {
+  const {new_password, confirm_password} = req.body
+  const {existingHashedPassword} = req
+  const MINIMUM_PASSWORD_LENGTH = 10
 
-  try {
-    const findUser = await UserModel.findById(userId).select(['password']);
-
-    const isValidPassword = await validatePassword(current_password, findUser.password);
-    if (!isValidPassword) {
-      return res.status(401)
-      .json({
-        success: false,
-        message: 'Incorrect password'
-      })
-    }
-
-    if (new_password !== confirm_password) {
+   if (new_password !== confirm_password) {
       return res.status(400)
       .json({
         success: false,
@@ -103,7 +92,8 @@ async function changePassword(req, res, next) {
     }
 
     const hashedPassword = await generatePasswordHash(new_password)
-    if (hashedPassword === findUser.password) {
+
+    if (await validatePassword(new_password, existingHashedPassword)) {
       return res.status(400)
       .json({
         success: false,
@@ -111,11 +101,11 @@ async function changePassword(req, res, next) {
       })
     }
 
-    if (new_password.length < 8) {
+    if (new_password.length < MINIMUM_PASSWORD_LENGTH) {
       return res.status(400)
       .json({
         success: false,
-        message: 'Password should not be less than 8 characters.'
+        message: `Password should not be less than ${MINIMUM_PASSWORD_LENGTH} characters.`
       })
     }
 
@@ -126,17 +116,27 @@ async function changePassword(req, res, next) {
         message: 'Password is too weak. Use a combination of Uppercase letters, numbers and symbols.'
       })
     }
-    await UserModel.findByIdAndUpdate(userId, {
-      password: hashedPassword
-    })
-    return res.status(200)
-      .json({
-        success: true,
-        message: 'Password changed successfully'
-      })
-    
-  } catch (err) {}
+
+    req.newHashedPassword = hashedPassword
+    next()
 }
+
+async function changePassword(req, res, next) {
+    try {
+        await UserModel.findByIdAndUpdate(req.userId, {
+          password: req.newHashedPassword
+        });
+        next()
+    } catch (err) {
+        logger.error(err)
+        return res.status(500)
+        .json({
+            success: false,
+            message: 'Could not change user password'
+        })
+    }
+}
+ 
 
 async function validateUserCredentials(req, res, next) {
     let {email, password} = req.body
@@ -185,5 +185,6 @@ module.exports = {
     changePassword,
     verifyEmail,
     decodeSharableThreadLink,
-    validateUserCredentials
+    validateUserCredentials,
+    validatePasswordStrength
 }

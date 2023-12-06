@@ -5,12 +5,11 @@ const logger = require('../../logger')
 const UserModel = require('../../database/models/User')
 const SubscriptionModel = require('../../database/models/Subscription')
 const GeneratedLinkModel = require('../../database/models/GeneratedLink')
-const {createJwtToken, generatePasswordHash} = require('../../utils/auth')
+const {createJwtToken, generatePasswordHash, validatePassword} = require('../../utils/auth')
 const {sendVerificationEmail, sendPasswordResetLink} = require('../../utils/sendEmail')
-const {validateUserCredentials, changePassword} = require('./middlewares/users')
+const {validateUserCredentials, changePassword, validateUser, validatePasswordStrength} = require('./middlewares/users')
 const {NODE_ENV, CONSTANTS, API_DOMAIN_NAME, STRIPE_PUBLISHABLE_KEY} = require('../../config')
 const crypto = require('crypto');
-const {validateUser} = require('./middlewares/users')
 
 router.get('', validateUser, async (req, res) => {
   try {
@@ -60,9 +59,8 @@ router.post('/forgot_password', async (req, res) => {
       const newLink = await GeneratedLinkModel.create({
         slug: linkSlug,
         user: user.id,
-        reason: CONSTANTS.GENERATED_LINK_REASON.EMAIL_VERIFICATION
+        reason: CONSTANTS.GENERATED_LINK_REASON.RESET_PASSWORD
       })
-
 
       sendPasswordResetLink(email, passwordResetLink)
       .then(async res => {
@@ -98,25 +96,77 @@ router.post('/forgot_password', async (req, res) => {
   
 })
 
-// router.get('/reset_password/:slug', validateResetPasswordLink, async (req, res, next) => {
-//   const {slug} = req.params
+router.post('/reset_password/:slug', async (req, res, next) => {
+  const {slug} = req.params
 
-//   const findSlug = await GeneratedLinkModel.findOne({
-//     slug
-//   })
+  try {
+    const findSlug = await GeneratedLinkModel.findOne({
+      slug
+    })
 
-//   if (!findSlug) {
-//     return res.status(400)
-//     .json({
-//       success: false,
-//       message: 'Invalid Link'
-//     })
-//   }
+    if (!findSlug) {
+      return res.status(400)
+      .json({
+        success: false,
+        message: 'Invalid Link'
+      })
+    };
 
-//   next()
-// });
+    const findUser = await UserModel.findById(findSlug.user).select(['password'])
+    req.existingHashedPassword = findUser.password
+    req.userId = findUser.id
 
-router.post('/change_password', validateUser, changePassword);
+    next();
+
+  } catch (err) {
+    logger.error('Could not initiate a password reset', err);
+    return res.status(500)
+    .json({
+      success: false,
+      message: 'Could not initiate a password reset'
+    })
+  }
+
+},
+  validatePasswordStrength, 
+  changePassword,
+  async (req, res) => {
+    const {slug} = req.params
+    await GeneratedLinkModel.findOneAndDelete({slug})
+    return res.status(200)
+      .json({
+        success: true,
+        message: 'Password changed successfully'
+    })
+  }
+);
+
+
+router.post('/change_password', validateUser, async (req, next) => {
+  const {current_password} = req.body
+
+  const {userId} = req
+
+  try {
+    const findUser = await UserModel.findById(userId).select(['password']);
+
+    const isValidPassword = await validatePassword(current_password, findUser.password);
+    if (!isValidPassword) {
+      return res.status(401)
+      .json({
+        success: false,
+        message: 'Incorrect password'
+      })
+    };
+    req.existingHashedPassword = findUser.password
+    next();
+  } catch (err) {
+
+  }
+}, 
+  validatePasswordStrength, 
+  changePassword
+);
 
 router.post('/', async (req, res) => {
   const {full_name, email, password} = req.body
