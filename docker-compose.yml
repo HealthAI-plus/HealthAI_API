@@ -24,4 +24,7 @@ services:
       - 5000:5000
     depends_on:
       - klusdb
+    restart: always
+    volumes:
+      - ./:/usr/appvol
     
