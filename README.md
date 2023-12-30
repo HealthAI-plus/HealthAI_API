@@ -1,5 +1,5 @@
 # HealthAI_API
-Eunoia is a sleek and secure chat app designed for empowering conversations. This repository contains both the server and client components of the Eunoia chat system
+AI-Powered Symptom and diagnosis Guidance Application
 
 # Installation:
 ## Prerequisites:
